@@ -16,14 +16,17 @@ namespace ClinicToCloudCodingChallenge.Database
             _apiContext = apiContext;
         }
 
-        public async Task<List<DatabaseModels.Patient>> GetPatients()
+        public async Task<PatientResponse> GetPatients()
         {
-            return await Task<List<Patient>>.Run(() => _apiContext.Patients.ToList());
+            var results = await Task<List<Patient>>.Run(() => _apiContext.Patients.ToList());
+            var response = new PatientResponse();
+            List<Patient> patients = Helper.TransformToPatient(results);
+            response.Patients = patients;
+            return response;
         }
         //This can also be done with SQL server Stored Procedure
         public async Task<PatientResponseV2> GetPatients(int page, int pagesize)
         {
-            var result = new List<DatabaseModels.Patient>();
             var totalRecords = _apiContext.Patients.Count();
 
             var pageCount = (double)totalRecords / pagesize;
@@ -79,26 +82,11 @@ namespace ClinicToCloudCodingChallenge.Database
                 LastName = patientRequest.LastName,
                 Phone = patientRequest.Phone
             };
-            try
-            {
-                //_apiContext.Entry(request).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                //_apiContext.Entry(request).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                //_apiContext.Patients.
+            var entry = _apiContext.Patients.First(e => e.Id == request.Id);
+            _apiContext.Entry(entry).CurrentValues.SetValues(request);
 
-                var entry = _apiContext.Patients.First(e => e.Id == request.Id);
-                _apiContext.Entry(entry).CurrentValues.SetValues(request);
-
-                //_apiContext.SaveChanges();
-                var response = await _apiContext.SaveChangesAsync();
-                return request;
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-
+            var response = await _apiContext.SaveChangesAsync();
+            return request;
         }
         public async Task<DatabaseModels.Patient> CheckIfAlreadyPresent(PatientRequest patientRequest)
         {

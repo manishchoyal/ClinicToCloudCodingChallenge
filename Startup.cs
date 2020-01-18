@@ -77,7 +77,7 @@ namespace ClinicToCloudCodingChallenge
 
         private void AddTestData(ApiContext context)
         {
-            for(int i = 0; i < 15; i++)
+            for(int i = 1; i <= 15; i++)
             {
                 Database.Models.Patient p = new Database.Models.Patient
                 {

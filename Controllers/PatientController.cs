@@ -80,7 +80,7 @@ namespace ClinicToCloudCodingChallenge.Controllers
             {
                 return StatusCode(304); 
             }
-            _patientService.UpdatePatient(id, patientRequest);
+            await _patientService.UpdatePatient(id, patientRequest);
 
             return Ok();
         }

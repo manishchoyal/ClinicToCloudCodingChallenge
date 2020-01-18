@@ -8,7 +8,7 @@ namespace ClinicToCloudCodingChallenge.Database
 {
     public interface IDatabase
     {
-        Task<List<DatabaseModels.Patient>> GetPatients();
+        Task<PatientResponse> GetPatients();
         Task<PatientResponseV2> GetPatients(int page, int pagesize);
         Task<DatabaseModels.Patient> AddPatient(PatientRequest patientRequest);
         Task<DatabaseModels.Patient> CheckIfAlreadyPresent(PatientRequest patientRequest);
