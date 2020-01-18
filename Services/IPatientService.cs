@@ -7,8 +7,10 @@ namespace ClinicToCloudCodingChallenge.Services
 {
     public interface IPatientService
     {
-        Task<List<PatientResponse>> GetPatients();
-        Task<PatientResponse> AddPatient(PatientRequest patientRequest);
-        Task<PatientResponse> UpdatePatient(Guid id, PatientRequest patientRequest);
+        Task<PatientResponse> GetPatients();
+        Task<Patient> AddPatient(PatientRequest patientRequest);
+        Task<Patient> UpdatePatient(Guid id, PatientRequest patientRequest);
+        Task<Patient> CheckIfAlreadyPresent(PatientRequest patientRequest);
+        Task<bool> CheckIfIdExists(Guid id);
     }
 }

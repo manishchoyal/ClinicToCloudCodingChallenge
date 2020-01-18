@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ClinicToCloudCodingChallenge.Database.Models
+namespace ClinicToCloudCodingChallenge.Models
 {
     public class Patient
     {
-        [System.ComponentModel.DataAnnotations.Key]
         [JsonProperty(PropertyName = "id")]
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         [JsonProperty(PropertyName = "first_name")]
         public string FirstName { get; set; }
         [JsonProperty(PropertyName = "last_name")]
@@ -26,8 +25,8 @@ namespace ClinicToCloudCodingChallenge.Database.Models
         [JsonProperty(PropertyName = "is_active")]
         public bool IsActive { get; set; }
         [JsonProperty(PropertyName = "created_at")]
-        public DateTime CreatedAt { get; set; }
-        [JsonProperty(PropertyName = "updated_at")] 
-        public DateTime? UpdatedAt { get; set; }
+        public string CreatedAt { get; set; }
+        [JsonProperty(PropertyName = "updated_at")]
+        public string UpdatedAt { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ClinicToCloudCodingChallenge.Models;
 using ClinicToCloudCodingChallenge.Services;
@@ -26,36 +27,48 @@ namespace ClinicToCloudCodingChallenge.Controllers
         public async Task<IActionResult> GetPatients()
         {
             var getPatientsTask = _patientService.GetPatients();
-            var allPatients = await getPatientsTask;
-            if( allPatients == null || allPatients.Count == 0)
+            var response = await getPatientsTask;
+            if (response == null || response.Patients.Count == 0)
             {
                 return NotFound("No records found.");
             }
 
-            return Ok(allPatients);
+            return Ok(response);
         }
         [HttpPost("v1/patients")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Patient), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddPatient(PatientRequest patientRequest)
         {
+            var patientExists = await _patientService.CheckIfAlreadyPresent(patientRequest);
+            var patientUri = new Uri($"v1/patients", UriKind.Relative);
+            if (patientExists != null)
+            {
+                return Conflict(patientExists);
+            }
             var addPatientTask = _patientService.AddPatient(patientRequest);
-            var patient = await addPatientTask;
-
-            return Ok(patient);
+            var patient = await addPatientTask;            
+            return Created(patientUri, patient);
         }
         [HttpPut("v1/patients/{id}")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdatePatient([Required(ErrorMessage = "Patient Id is Required")] Guid id, 
-            PatientRequest patientRequest)
+        public async Task<IActionResult> UpdatePatient([Required(ErrorMessage = "Patient Id is Required")] Guid id,
+            [Required] PatientRequest patientRequest)
         {
-            var updatePatientTask = _patientService.UpdatePatient(id, patientRequest);
-            var patient = await updatePatientTask;
+            var patientExists = await _patientService.CheckIfIdExists(id);
+            var patientUri = new Uri($"v1/patients/{id}", UriKind.Relative);
+            if (patientExists == false)
+            {
+                return StatusCode(304); 
+            }
+            _patientService.UpdatePatient(id, patientRequest);
 
-            return Ok(patient);
+            return Ok();
         }
     }
 }
