@@ -77,20 +77,25 @@ namespace ClinicToCloudCodingChallenge
 
         private void AddTestData(ApiContext context)
         {
-            Database.Models.Patient p = new Database.Models.Patient
+            for(int i = 0; i < 15; i++)
             {
-                DateOfBirth = "22/12/1989",
-                FirstName = "M",
-                LastName = "A",
-                Email = "Test@test.com.au",
-                Gender = "Male",
-                Id = new Guid(),
-                IsActive = true,
-                Phone = "123123",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-            context.Add(p);
+                Database.Models.Patient p = new Database.Models.Patient
+                {
+                    DateOfBirth = "12/12/2012",
+                    FirstName = $"Sam {i}",
+                    LastName = $"Smith {i}",
+                    Email = $"Test{i}@test.com.au",
+                    Gender = "Male",
+                    Id = new Guid(),
+                    IsActive = true,
+                    Phone = $"123123{i}",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                context.Add(p);
+            }
+            
+            
             context.SaveChanges();
         }
     }

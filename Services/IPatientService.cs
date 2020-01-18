@@ -12,5 +12,6 @@ namespace ClinicToCloudCodingChallenge.Services
         Task<Patient> UpdatePatient(Guid id, PatientRequest patientRequest);
         Task<Patient> CheckIfAlreadyPresent(PatientRequest patientRequest);
         Task<bool> CheckIfIdExists(Guid id);
+        Task<PatientResponseV2> GetPatients(int page, int pagesize);
     }
 }

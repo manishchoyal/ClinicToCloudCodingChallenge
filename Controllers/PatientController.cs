@@ -35,6 +35,20 @@ namespace ClinicToCloudCodingChallenge.Controllers
 
             return Ok(response);
         }
+        [HttpGet("v1/patientsbypage")]
+        [ProducesResponseType(typeof(PatientResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPatients(int page, int pagesize)
+        {
+            var getPatientsTask = _patientService.GetPatients(page, pagesize);
+            var response = await getPatientsTask;
+            if (response == null || response.Patients.Count == 0)
+            {
+                return NotFound("No records found.");
+            }
+
+            return Ok(response);
+        }
         [HttpPost("v1/patients")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

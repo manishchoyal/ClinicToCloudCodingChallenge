@@ -24,6 +24,10 @@ namespace ClinicToCloudCodingChallenge.Services
             response.Patients = patients;
             return response;
         }
+        public async Task<PatientResponseV2> GetPatients(int page, int pagesize)
+        {
+            return await _database.GetPatients(page, pagesize);            
+        }
         public async Task<Patient> AddPatient(PatientRequest patientRequest)
         {
             var  response = await _database.AddPatient(patientRequest);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClinicToCloudCodingChallenge.Utilities;
 
 namespace ClinicToCloudCodingChallenge.Database
 {
@@ -18,6 +19,29 @@ namespace ClinicToCloudCodingChallenge.Database
         public async Task<List<DatabaseModels.Patient>> GetPatients()
         {
             return await Task<List<Patient>>.Run(() => _apiContext.Patients.ToList());
+        }
+        //This can also be done with SQL server Stored Procedure
+        public async Task<PatientResponseV2> GetPatients(int page, int pagesize)
+        {
+            var result = new List<DatabaseModels.Patient>();
+            var totalRecords = _apiContext.Patients.Count();
+
+            var pageCount = (double)totalRecords / pagesize;
+            var skip = (page - 1) * pagesize;
+
+            var results = await Task<List<DatabaseModels.Patient>>.Run(() => _apiContext.Patients.Skip(skip).Take(pagesize).ToList());
+            var response = new PatientResponseV2();
+            List<Patient> patients = Helper.TransformToPatient(results);
+            response.Patients = patients;
+            response.PagingHeader = new PagingHeader
+            {
+                TotalRecords = totalRecords,
+                TotalPages = (int)pageCount,
+                PageNumber = page,
+                PageSize = pagesize
+
+            };
+            return response;
         }
 
         public async Task<DatabaseModels.Patient> AddPatient(PatientRequest patientRequest)
@@ -35,10 +59,10 @@ namespace ClinicToCloudCodingChallenge.Database
                 LastName = patientRequest.LastName,
                 Phone = patientRequest.Phone
             };
-            
+
             _apiContext.Patients.Add(request);
 
-            var response =  await _apiContext.SaveChangesAsync();
+            var response = await _apiContext.SaveChangesAsync();
             return request;
         }
         public async Task<DatabaseModels.Patient> UpdatePatient(PatientRequest patientRequest, Guid id)
@@ -63,25 +87,25 @@ namespace ClinicToCloudCodingChallenge.Database
 
                 var entry = _apiContext.Patients.First(e => e.Id == request.Id);
                 _apiContext.Entry(entry).CurrentValues.SetValues(request);
-                
+
                 //_apiContext.SaveChanges();
                 var response = await _apiContext.SaveChangesAsync();
                 return request;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
 
-            
+
         }
         public async Task<DatabaseModels.Patient> CheckIfAlreadyPresent(PatientRequest patientRequest)
-        {            
-            var response = await Task< DatabaseModels.Patient>.Run(() => 
-                                            _apiContext.Patients.Where(a => a.FirstName == patientRequest.FirstName 
-                                                && a.LastName == patientRequest.LastName 
-                                                && a.DateOfBirth == patientRequest.DateOfBirth).FirstOrDefault());
+        {
+            var response = await Task<DatabaseModels.Patient>.Run(() =>
+                                           _apiContext.Patients.Where(a => a.FirstName == patientRequest.FirstName
+                                               && a.LastName == patientRequest.LastName
+                                               && a.DateOfBirth == patientRequest.DateOfBirth).FirstOrDefault());
             return response;
         }
         public async Task<DatabaseModels.Patient> CheckIfIdExists(Guid id)
