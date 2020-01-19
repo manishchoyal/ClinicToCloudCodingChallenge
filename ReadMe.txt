@@ -31,3 +31,6 @@ Detailed Explanation:
 3. Update Patient details ( Put v1/patients/{id})
 	This end point will update Patient details. This API will first check if the ID is present in the database and then update the Patient record. 
 	Return Ok 200 status code when updated successfully. Will return 304 status code when a patient with the passed Id is not present in the database.
+
+
+I have committed most code directly to Master but have created branches based on tickets and raise a pull request for code review and merge to master branch.
